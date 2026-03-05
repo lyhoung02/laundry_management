@@ -17,8 +17,9 @@ RUN if [ -f /app/package.json ]; then \
 			echo "package.json not found in /app or /app/frontend"; \
 			exit 1; \
 		fi && \
-		if [ -f package-lock.json ]; then npm ci; else npm install; fi && \
-		npm run build
+		if [ -f package-lock.json ]; then npm ci --include=dev; else npm install; fi && \
+		npm run build && \
+		npm prune --omit=dev
 
 EXPOSE 3000
 
