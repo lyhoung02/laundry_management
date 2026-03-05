@@ -20,8 +20,11 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
-
 app.use(express.json());
+app.use((req, res, next) => {
+  req.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://laundry-management-wir4.onrender.com';
+  next();
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -35,21 +38,23 @@ app.use('/api/reports', require('./routes/reports'));
 app.use('/api/compliance', require('./routes/compliance'));
 
 // Initialize DB
-async function initDB() {
-  try {
-    const schema = fs.readFileSync(path.join(__dirname, 'config/schema.sql'), 'utf8');
-    const statements = schema.split(';').filter(s => s.trim());
-    for (const stmt of statements) {
-      if (stmt.trim()) await pool.execute(stmt);
-    }
-    console.log('✅ Database initialized');
-  } catch (err) {
-    console.error('DB init error:', err.message);
-  }
-}
+// async function initDB() {
+//   try {
+//     const schema = fs.readFileSync(path.join(__dirname, 'config/schema.sql'), 'utf8');
+//     const statements = schema.split(';').filter(s => s.trim());
+//     for (const stmt of statements) {
+//       if (stmt.trim()) await pool.execute(stmt);
+//     }
+//     console.log('✅ Database initialized');
+//   } catch (err) {
+//     console.error('DB init error:', err.message);
+//   }
+// }
+
+
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, async () => {
   console.log(`🚀 Backend running on port ${PORT}`);
-  await initDB();
+  // await initDB();
 });
