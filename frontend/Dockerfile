@@ -1,40 +1,25 @@
-FROM node:18-alpine AS deps
-WORKDIR /app
-COPY package*.json ./
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-# Set environment variable for Next.js
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Build the application
-RUN npm run build
-
-FROM node:18-alpine AS runner
+FROM node:18-alpine
 WORKDIR /app
 
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV PORT 3000
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Copy application files (supports both repo-root and frontend-folder build contexts)
+COPY . .
 
-# Copy necessary files from builder
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
+# Install dependencies and build
+RUN if [ -f /app/package.json ]; then \
+			cd /app; \
+		elif [ -f /app/frontend/package.json ]; then \
+			cd /app/frontend; \
+		else \
+			echo "package.json not found in /app or /app/frontend"; \
+			exit 1; \
+		fi && \
+		if [ -f package-lock.json ]; then npm ci; else npm install; fi && \
+		npm run build
 
 EXPOSE 3000
 
-ENV PORT 3000
-
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "if [ -f /app/package.json ]; then cd /app; else cd /app/frontend; fi && npm start"]
