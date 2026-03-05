@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+
+# Environment files
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env.local
+
+# Logs and OS files
+*.log
+.DS_Store

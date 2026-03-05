@@ -1,0 +1,14 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/quality": "pages/quality.js",
+  "/reports": "pages/reports.js",
+  "/schedule": "pages/schedule.js",
+  "/customers": "pages/customers.js",
+  "/login": "pages/login.js",
+  "/orders": "pages/orders.js",
+  "/inventory": "pages/inventory.js",
+  "/compliance": "pages/compliance.js",
+  "/dashboard": "pages/dashboard.js"
+}
