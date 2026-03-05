@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://laundry-management-wir4.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://laundry-management-wir4.onrender.com/api';
 
 const api = axios.create({ baseURL: API_URL });
 
