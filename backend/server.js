@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const pool = require('./config/database');
 const fs = require('fs');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 
 dotenv.config();
 
@@ -25,6 +27,9 @@ app.use((req, res, next) => {
   req.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://laundry-management-wir4.onrender.com';
   next();
 });
+
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

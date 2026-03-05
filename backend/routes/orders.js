@@ -2,6 +2,39 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Orders
+ *   description: Order management
+ */
+
+/**
+ * @swagger
+ * /api/orders:
+ *   get:
+ *     summary: Get all orders
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [pending, washing, drying, folding, ready, delivered, cancelled] }
+ *       - in: query
+ *         name: customer_id
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20 }
+ *     responses:
+ *       200:
+ *         description: Paginated list of orders
+ */
 // Get all orders
 router.get('/', auth, async (req, res) => {
   try {
@@ -26,6 +59,23 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Get a single order with items and QC checks
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Order details
+ *       404:
+ *         description: Order not found
+ */
 // Get single order
 router.get('/:id', auth, async (req, res) => {
   try {
@@ -42,6 +92,40 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/orders:
+ *   post:
+ *     summary: Create a new order
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [customer_id, total_weight]
+ *             properties:
+ *               customer_id: { type: integer, example: 1 }
+ *               priority: { type: string, enum: [normal, urgent], example: normal }
+ *               pickup_date: { type: string, format: date, example: "2026-03-10" }
+ *               delivery_date: { type: string, format: date, example: "2026-03-12" }
+ *               total_weight: { type: number, example: 5.5 }
+ *               cost_per_pound: { type: number, example: 2.5 }
+ *               special_instructions: { type: string }
+ *               items:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     item_name: { type: string, example: Shirt }
+ *                     quantity: { type: integer, example: 3 }
+ *                     wash_type: { type: string, enum: [standard, delicate, heavy], example: standard }
+ *                     special_instructions: { type: string }
+ *     responses:
+ *       200:
+ *         description: Order created
+ */
 // Create order
 router.post('/', auth, async (req, res) => {
   const conn = await pool.getConnection();
@@ -79,6 +163,33 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/orders/{id}/status:
+ *   patch:
+ *     summary: Update order status
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [status]
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, washing, drying, folding, ready, delivered, cancelled]
+ *                 example: washing
+ *     responses:
+ *       200:
+ *         description: Status updated
+ */
 // Update order status
 router.patch('/:id/status', auth, async (req, res) => {
   try {

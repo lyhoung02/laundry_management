@@ -2,6 +2,23 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Dashboard
+ *   description: Dashboard statistics
+ */
+
+/**
+ * @swagger
+ * /api/dashboard/stats:
+ *   get:
+ *     summary: Get dashboard statistics
+ *     tags: [Dashboard]
+ *     responses:
+ *       200:
+ *         description: Order stats, inventory stats, customer count, recent orders, weekly revenue, orders by status
+ */
 router.get('/stats', auth, async (req, res) => {
   try {
     const [[orderStats]] = await pool.execute(`

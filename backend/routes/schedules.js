@@ -2,6 +2,30 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Schedules
+ *   description: Schedule management
+ */
+
+/**
+ * @swagger
+ * /api/schedules:
+ *   get:
+ *     summary: Get all schedules
+ *     tags: [Schedules]
+ *     parameters:
+ *       - in: query
+ *         name: date
+ *         schema: { type: string, format: date, example: "2026-03-10" }
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [pending, completed] }
+ *     responses:
+ *       200:
+ *         description: List of schedules
+ */
 router.get('/', auth, async (req, res) => {
   try {
     const { date, status } = req.query;
@@ -21,6 +45,29 @@ router.get('/', auth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+/**
+ * @swagger
+ * /api/schedules:
+ *   post:
+ *     summary: Create a schedule entry
+ *     tags: [Schedules]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title: { type: string, example: Pickup run }
+ *               order_id: { type: integer }
+ *               schedule_type: { type: string, enum: [pickup, delivery, wash], example: pickup }
+ *               scheduled_at: { type: string, format: date-time, example: "2026-03-10T09:00:00" }
+ *               assigned_to: { type: integer }
+ *               notes: { type: string }
+ *     responses:
+ *       200:
+ *         description: Schedule created
+ */
 router.post('/', auth, async (req, res) => {
   try {
     const { title, order_id, schedule_type, scheduled_at, assigned_to, notes } = req.body;
@@ -32,6 +79,21 @@ router.post('/', auth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+/**
+ * @swagger
+ * /api/schedules/{id}/complete:
+ *   patch:
+ *     summary: Mark a schedule as completed
+ *     tags: [Schedules]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Completed
+ */
 router.patch('/:id/complete', auth, async (req, res) => {
   try {
     await pool.execute(

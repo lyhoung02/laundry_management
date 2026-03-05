@@ -2,6 +2,32 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Reports
+ *   description: Analytics and reporting
+ */
+
+/**
+ * @swagger
+ * /api/reports/analytics:
+ *   get:
+ *     summary: Get analytics report
+ *     tags: [Reports]
+ *     parameters:
+ *       - in: query
+ *         name: from
+ *         schema: { type: string, format: date, example: "2026-02-01" }
+ *         description: Start date (defaults to 30 days ago)
+ *       - in: query
+ *         name: to
+ *         schema: { type: string, format: date, example: "2026-03-05" }
+ *         description: End date (defaults to today)
+ *     responses:
+ *       200:
+ *         description: Daily revenue, top customers, wash types, KPIs
+ */
 router.get('/analytics', auth, async (req, res) => {
   try {
     const { from, to } = req.query;

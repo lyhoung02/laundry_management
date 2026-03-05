@@ -2,6 +2,23 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Quality
+ *   description: Quality check management
+ */
+
+/**
+ * @swagger
+ * /api/quality:
+ *   get:
+ *     summary: Get latest 50 quality checks
+ *     tags: [Quality]
+ *     responses:
+ *       200:
+ *         description: List of quality checks
+ */
 router.get('/', auth, async (req, res) => {
   try {
     const [checks] = await pool.execute(
@@ -15,6 +32,30 @@ router.get('/', auth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+/**
+ * @swagger
+ * /api/quality:
+ *   post:
+ *     summary: Record a quality check
+ *     tags: [Quality]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [order_id]
+ *             properties:
+ *               order_id: { type: integer, example: 1 }
+ *               temperature: { type: number, example: 60 }
+ *               detergent_used: { type: string, example: Standard Bio }
+ *               wash_cycle: { type: string, example: Normal }
+ *               result: { type: string, enum: [pass, fail], example: pass }
+ *               notes: { type: string }
+ *     responses:
+ *       200:
+ *         description: QC recorded
+ */
 router.post('/', auth, async (req, res) => {
   try {
     const { order_id, temperature, detergent_used, wash_cycle, result, notes } = req.body;

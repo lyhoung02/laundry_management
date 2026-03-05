@@ -2,6 +2,23 @@ const router = require('express').Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Compliance
+ *   description: Compliance audit logs
+ */
+
+/**
+ * @swagger
+ * /api/compliance:
+ *   get:
+ *     summary: Get latest 100 compliance log entries
+ *     tags: [Compliance]
+ *     responses:
+ *       200:
+ *         description: List of compliance log entries
+ */
 router.get('/', auth, async (req, res) => {
   try {
     const [logs] = await pool.execute(
